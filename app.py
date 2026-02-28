@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 
-# 문구 목록
+# 문구 목록 (도균님이 원하는 문구로 자유롭게 수정 가능!)
 sentences = [
     "안 촉촉한 초코칩 나라에 살던 안 촉촉한 초코칩이 촉촉한 초코칩 나라의 촉촉한 초코칩을 보고...",
     "서울특별시 특허허가과 허가과장 허과장",
@@ -12,27 +12,21 @@ sentences = [
 st.set_page_config(page_title="MT 취중 타자왕", page_icon="🍺")
 st.title("🍺 MT 취중 타자 대항전")
 
-# 1. 초기화 함수 정의
-def reset_game():
-    st.session_state.start_time = None
-    st.session_state.user_input = ""
-
-# 2. 세션 상태 설정
+# 세션 상태 초기화
 if 'start_time' not in st.session_state:
     st.session_state.start_time = None
 
-# 3. 문장 선택 (바꿀 때마다 초기화)
-target = st.selectbox("도전할 문장을 고르세요", sentences, on_change=reset_game)
-st.info(f"👉 입력할 문장: **{target}**")
+# 문장 선택 (문장을 바꾸면 자동으로 초기화됨)
+target = st.selectbox("도전할 문장을 고르세요", sentences)
 
-# 4. 입력창 (key를 주어 제어 가능하게 함)
-user_input = st.text_input("여기에 입력하고 '엔터'를 누르세요!", key="user_input")
+# 입력창 (여기서 핵심은 key를 부여하지 않고 단순히 입력을 받는 것입니다)
+user_input = st.text_input("여기에 입력하고 '엔터'를 누르세요!")
 
-# 5. 시간 기록 시작
+# 입력 시작 시간 기록
 if user_input == "" and st.session_state.start_time is None:
     st.session_state.start_time = time.time()
 
-# 6. 결과 판정
+# 결과 판정
 if user_input:
     if user_input == target:
         end_time = time.time()
@@ -40,9 +34,10 @@ if user_input:
         st.success(f"🎉 성공! 기록: {duration:.2f}초")
         st.balloons()
         
-        # 다시 하기 버튼 (누르면 페이지 리로드)
-        if st.button("새 문장으로 다시 도전"):
-            reset_game()
+        # 다시 하기 버튼: 클릭 시 페이지 전체를 새로고침하여 초기화
+        if st.button("처음부터 다시 도전"):
             st.rerun()
     else:
         st.error("❌ 오타가 있어요! 다시 확인해보세요.")
+        # 틀렸을 때 힌트 (어디가 틀렸는지 보여주면 더 재밌음)
+        st.info(f"정답: {target}")
